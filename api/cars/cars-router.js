@@ -20,6 +20,14 @@ router.get("/:id", middleware.checkCarId, async (req, res, next)=>{
     }
 })
 
+router.post("/", middleware.checkCarPayload, middleware.checkVinNumberValid,middleware.checkVinNumberUnique, async (req, res, next)=>{
+    try{
+        res.status(200).json(req.car);
+    }catch (err){
+        next(err);
+    }
+})
+
 router.use((err, req, res, next) => { // eslint-disable-line
     res.status(err.status || 500).json({
       message: `unknown error occured: ${err.message}`,
