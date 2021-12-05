@@ -8,8 +8,12 @@ const getById = async (id) => {
   return await db("cars").select("*").where("id", id);
 }
 
-const create = () => {
-  // DO YOUR MAGIC
+const create = async(car) => {
+  return await db("cars").insert(car);
 }
 
-module.exports = {getAll, getById, create};
+const deleteById = async (id) => {
+  return await db("cars").where("id", id).del();
+}
+
+module.exports = {getAll, getById, create, deleteById};

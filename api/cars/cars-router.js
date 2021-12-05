@@ -22,7 +22,18 @@ router.get("/:id", middleware.checkCarId, async (req, res, next)=>{
 
 router.post("/", middleware.checkCarPayload, middleware.checkVinNumberValid,middleware.checkVinNumberUnique, async (req, res, next)=>{
     try{
-        res.status(200).json(req.car);
+        res.status(201).json(req.createdCar);
+    }catch (err){
+        next(err);
+    }
+})
+
+router.delete("/:id", middleware.checkCarId, async (req, res, next)=>{
+    try{
+        const {id} = req.params;
+        console.log("id = ", id );
+        const result = await modelCars.deleteById(id);
+        res.status(201).json(`successfully deleted id ${id}`);
     }catch (err){
         next(err);
     }
