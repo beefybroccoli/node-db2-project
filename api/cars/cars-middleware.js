@@ -1,4 +1,5 @@
 const modelCars = require("./cars-model");
+const vinValidator = require('vin-validator');
 
 const checkCarId = async (req, res, next) => {
   try{
@@ -18,8 +19,17 @@ const checkCarId = async (req, res, next) => {
 const checkCarPayload = (req, res, next) => {
   try{
     const {vin, make, model, mileage, title, transmission} = req.body;
-    if (!vin || !make || !model || !mileage){
-      res.status(400).json({message:"require vin, make, model and mileage"});
+    if (!vin){
+      res.status(400).json({message:"vin is missing"});
+    }
+    else if (!make){
+      res.status(400).json({message:"make is missing"});
+    }
+    else if (!model){
+      res.status(400).json({message:"model is missing"});
+    }
+    else if (!mileage){
+      res.status(400).json({message:"mileage is missing"});
     }else if (typeof(Number(mileage)) !== "number"){  
       res.status(400).json({message:"mileage must be a number"});
     }else if (Number(mileage) < 0 || Number(mileage) > 1e6 ){
@@ -31,15 +41,13 @@ const checkCarPayload = (req, res, next) => {
   }catch(err){
     next(err);
   }
-  
-
 }
 
 const checkVinNumberValid = (req, res, next) => {
   try{
     const {vin} = req.body;
-    if (vin.trim().length === 0  || vin.trim().length > 20){
-      res.status(400).json({message:"vin must between 0 and 20 characters"});
+    if (vinValidator.validate(vin.trim())===false){
+      res.status(400).json({message:`vin ${vin} is invalid`});
     }else{
       next();
     }
@@ -55,7 +63,7 @@ const checkVinNumberUnique = async (req, res, next) => {
       req.createdCar = createdCar[0];
       next();
   }catch( err){
-    res.status(400).json({message:"VIN is already exists, pick a new VIN"});
+    res.status(400).json({message:`vin ${req.body.vin} already exists`});
   }
 }
 
